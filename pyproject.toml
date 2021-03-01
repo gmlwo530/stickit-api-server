@@ -4,10 +4,6 @@ version = "0.0.1"
 description = ""
 authors = ["CHOI HEE JAE <gmlwo530@gmail.com>"]
 
-packages = [
-    { include = "app"},
-    { include = "*.py", from = "."},
-]
 
 [tool.poetry.dependencies]
 python = "^3.8"
