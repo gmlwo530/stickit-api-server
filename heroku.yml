@@ -1,5 +1,5 @@
 build:
   docker:
-    api: Dockerfile
+    web: Dockerfile
 run:
-  api: uvicorn main:app
+  web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-5000}
