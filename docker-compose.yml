@@ -7,9 +7,4 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     ports:
-      - "8000:8000"
-    command:
-      - bash
-      - -c
-      - |
-        uvicorn main:app
+      - "8000:5000"
