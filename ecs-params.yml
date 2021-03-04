@@ -1,0 +1,7 @@
+version: 1
+task_definition:
+  services:
+    app:
+      mem_limit: "200m"
+    web:
+      mem_limit: "200m"
