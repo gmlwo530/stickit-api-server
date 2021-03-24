@@ -1,8 +1,8 @@
 FROM nginx
 
-RUN apt-get update -qq && apt-get -y install apache2-utils
+RUN apt-get update -qq && apt-get -y install apache2-utils && apt-get -y install vim
 
-ENV FASTAPI_ROOT /app/
+ENV FASTAPI_ROOT /app
 
 WORKDIR $FASTAPI_ROOT
 
@@ -12,8 +12,6 @@ RUN mkdir log
 # COPY public public/
 
 COPY /docker/web/nginx/nginx.conf /tmp/app.conf
-
-EXPOSE 80
 
 COPY docker/web/nginx/start.sh ./
 

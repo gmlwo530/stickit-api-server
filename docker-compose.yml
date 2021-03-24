@@ -8,12 +8,14 @@ services:
       args:
         INSTALL_DEV: ${INSTALL_DEV-false}
     ports:
-      - "8000:8000"
+      - 8000:8000
   web:
     image: 909232941556.dkr.ecr.ap-northeast-2.amazonaws.com/stickit-ecs-web
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile
+    depends_on:
+      - app
     links:
       - app
     ports:
