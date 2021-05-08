@@ -24,6 +24,7 @@ jobs:
           echo SERVER_NAME=127.0.0.1 >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
       - name: Start MongoDB
+        if: ${{ !env.ACT }}
         uses: supercharge/mongodb-github-action@1.3.0
         with:
           mongodb-version: 4.2
