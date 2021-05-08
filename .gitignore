@@ -13,6 +13,8 @@ coverage.xml
 .pytest_cache/
 pytestdebug.log
 
+__pycache__
+
 
 # pyenv
 .python-version
@@ -40,3 +42,5 @@ __pypackages__/
 # Ignore all local history of files
 .history
 .ionide
+
+.env
