@@ -29,8 +29,9 @@ jobs:
         with:
           mongodb-version: 4.2
         env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
+          MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
+        run: |
+          docker exec -it mongodb mongo --eval "use pixhelves_test_db; db.createUser({user: "root", pwd: "$MONGO_DB_PASSWORD", roles:["readWrite", "userAdmin"]});"
       - name: Install Poetry
         run: |
           curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
