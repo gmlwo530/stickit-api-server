@@ -26,7 +26,8 @@ async def db() -> motor.motor_asyncio.AsyncIOMotorDatabase:
         )
         yield db
     finally:
-        database.close_connection(db)
+        await db.client.drop_database("pixhelves_test_db")
+        db.client.close()
 
 
 @pytest.fixture
