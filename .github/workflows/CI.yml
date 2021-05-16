@@ -33,7 +33,7 @@ jobs:
         env:
           MONGO_DB_PASSWORD: ${{ secrets.MONGO_DB_PASSWORD }}
         run: |
-          sudo docker run -d -p 27017:27017 mongo:latest
+          sudo docker run -d -p 27017:27017 --name mongodb mongo:latest
           docker exec --tty mongodb mongo --eval "use pixhelves_test_db; db.createUser({user: \"root\", pwd: \"$MONGO_DB_PASSWORD\", roles:[\"readWrite\", \"userAdmin\"]});"
       - name: Install Poetry
         run: |
