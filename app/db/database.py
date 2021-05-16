@@ -7,12 +7,9 @@ import motor.motor_asyncio
 load_dotenv()
 
 
-def get_database(
-    mongodb_url: str = os.environ["MONGODB_URL"],
-    database_name: str = "pixhelves_db",
-) -> motor.motor_asyncio.AsyncIOMotorDatabase:
-    client = motor.motor_asyncio.AsyncIOMotorClient(mongodb_url)
-    return client[database_name]
+def get_database() -> motor.motor_asyncio.AsyncIOMotorDatabase:
+    client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"])
+    return client[os.environ["MONGODB_DATABASE"]]
 
 
 def close_connection(db: motor.motor_asyncio.AsyncIOMotorDatabase):

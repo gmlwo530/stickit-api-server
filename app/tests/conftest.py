@@ -12,7 +12,6 @@ from app.tests.utils.utils import get_server_api
 
 import pytest
 import motor
-import os
 
 load_dotenv()
 
@@ -20,10 +19,7 @@ load_dotenv()
 @pytest.fixture
 async def db() -> motor.motor_asyncio.AsyncIOMotorDatabase:
     try:
-        db = database.get_database(
-            mongodb_url=os.environ["MONGODB_TEST_URL"],
-            database_name="pixhelves_test_db",
-        )
+        db = database.get_database()
         yield db
     finally:
         await db.client.drop_database("pixhelves_test_db")

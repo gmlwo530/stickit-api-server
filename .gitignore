@@ -44,4 +44,6 @@ __pypackages__/
 .ionide
 
 .env
+.env.shared
+.env.test
 github-actions.secrets
