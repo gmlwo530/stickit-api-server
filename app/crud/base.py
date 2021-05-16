@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
+
 from pymongo.results import InsertOneResult
 
 ModelType = TypeVar("ModelType", bound=BaseModel)
@@ -29,6 +30,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         obj_in_data = jsonable_encoder(obj_in)
         created: InsertOneResult = await db[self.model_name].insert_one(obj_in_data)
         new_obj: Dict = await db[self.model_name].find_one({"_id": created.inserted_id})
+
         return self.model(**new_obj)
 
     async def update(

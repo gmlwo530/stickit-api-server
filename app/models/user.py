@@ -13,8 +13,8 @@ from .base import Base
 
 class UserBase(Base):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    email: EmailStr = Field(...)
-    username: str = Field(...)  # ... indicate the field is required
+    email: EmailStr = Field(...)  # ... indicate the field is required
+    username: str = Field(...)
     admin_roles: Optional[List[Union[str, RoleEnum]]] = None
     admin_channels: Optional[List[Union[str, RoleEnum]]] = None
     disabled: Optional[bool] = None
@@ -34,7 +34,6 @@ class UserBase(Base):
 
 
 class UserCreate(UserBase):
-    email: str
     password: str
     admin_roles: List[Union[str, RoleEnum]] = []
     admin_channels: List[Union[str, RoleEnum]] = None

@@ -7,7 +7,7 @@ from httpx import AsyncClient
 from app.main import app
 from app.db import database
 from app.core import config
-from app.tests.utils.user import authentication_token_from_email
+from app.tests.utils.user import authentication_token_from_username
 from app.tests.utils.utils import get_server_api
 
 import pytest
@@ -35,4 +35,4 @@ async def async_client() -> Generator:
 
 @pytest.fixture
 async def normal_user_token_headers():
-    return await authentication_token_from_email("test@example.com")
+    return await authentication_token_from_username("test@example.com")
