@@ -48,3 +48,4 @@ __pypackages__/
 .env.test
 github-actions.secrets
 app/uploads
+.DS_Store
