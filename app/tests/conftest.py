@@ -4,14 +4,22 @@ from typing import Generator
 
 from httpx import AsyncClient
 
+from starlette.datastructures import UploadFile as StarletteUploadFile
+
 from app.main import app
 from app.db import database
 from app.core import config
 from app.tests.utils.user import authentication_token_from_username
-from app.tests.utils.utils import get_server_api
+from app.tests.utils.utils import get_server_api, random_lower_string
+
+from tempfile import SpooledTemporaryFile
+from pathlib import Path
+from unittest import mock
 
 import pytest
 import motor
+import aiofiles
+
 
 load_dotenv()
 
@@ -36,3 +44,22 @@ async def async_client() -> Generator:
 @pytest.fixture
 async def normal_user_token_headers():
     return await authentication_token_from_username("test@example.com")
+
+
+aiofiles.threadpool.wrap.register(mock.MagicMock)(
+    lambda *args, **kwargs: aiofiles.threadpool.AsyncBufferedIOBase(*args, **kwargs)
+)
+
+
+@pytest.fixture
+def file() -> StarletteUploadFile:
+    path = Path(__file__).parent
+
+    with open(
+        path.joinpath("utils/images/test.png"), "rb"
+    ) as f, SpooledTemporaryFile() as stf:
+        content = f.read()
+        stf.write(content)
+        yield StarletteUploadFile(
+            filename=random_lower_string(), file=stf, content_type="image/png"
+        )

@@ -3,7 +3,7 @@ from app.core.security import verify_password, get_password_hash
 from app.models.user import User, UserInDB, UserCreate, UserUpdate
 from app.models.role import RoleEnum
 
-from .utils import ensure_enums_to_strs
+from .utils.utils import ensure_enums_to_strs
 
 from fastapi.encoders import jsonable_encoder
 

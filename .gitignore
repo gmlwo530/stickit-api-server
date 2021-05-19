@@ -47,3 +47,4 @@ __pypackages__/
 .env.shared
 .env.test
 github-actions.secrets
+app/uploads
