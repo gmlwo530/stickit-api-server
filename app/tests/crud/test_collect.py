@@ -2,6 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from app import crud
+from app.models.user import User
 from app.models.collect import CollectCreate, CollectUpdate
 from app.tests.utils.utils import random_lower_string
 
@@ -9,18 +10,20 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_create_collect(db, file: StarletteUploadFile) -> None:
+async def test_create_collect(db, user: User, file: StarletteUploadFile) -> None:
     name = random_lower_string()
-    collect_in = CollectCreate(name=name, file=file)
+    collect_in = CollectCreate(name=name, file=file, user_id=str(user.id))
     collect = await crud.collect.create(db, obj_in=collect_in)
     assert collect.name == name
 
 
 @pytest.mark.asyncio
-async def test_get_collect(db, file: StarletteUploadFile) -> None:
+async def test_get_collect(db, user: User, file: StarletteUploadFile) -> None:
     name = random_lower_string()
     description = random_lower_string()
-    collect_in = CollectCreate(name=name, description=description, file=file)
+    collect_in = CollectCreate(
+        name=name, description=description, user_id=str(user.id), file=file
+    )
     collect = await crud.collect.create(db, obj_in=collect_in)
     collect2 = await crud.collect.get(db, id=collect.id)
     assert collect2
@@ -29,9 +32,9 @@ async def test_get_collect(db, file: StarletteUploadFile) -> None:
 
 
 @pytest.mark.asyncio
-async def test_update_collect(db, file: StarletteUploadFile) -> None:
+async def test_update_collect(db, user: User, file: StarletteUploadFile) -> None:
     old_name = random_lower_string()
-    collect_in = CollectCreate(name=old_name, file=file)
+    collect_in = CollectCreate(name=old_name, user_id=str(user.id), file=file)
     collect = await crud.collect.create(db, obj_in=collect_in)
     assert collect.name == old_name
 
@@ -52,10 +55,12 @@ async def test_update_collect(db, file: StarletteUploadFile) -> None:
 
 
 @pytest.mark.asyncio
-async def test_delete_collect(db, file: StarletteUploadFile) -> None:
+async def test_delete_collect(db, user: User, file: StarletteUploadFile) -> None:
     name = random_lower_string()
     description = random_lower_string()
-    collect_in = CollectCreate(name=name, description=description, file=file)
+    collect_in = CollectCreate(
+        name=name, description=description, user_id=str(user.id), file=file
+    )
     collect = await crud.collect.create(db, obj_in=collect_in)
 
     deleted_collect = await crud.collect.delete(db, obj=collect)

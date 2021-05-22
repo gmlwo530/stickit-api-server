@@ -1,5 +1,4 @@
-from fastapi import File, UploadFile
-
+from fastapi import UploadFile, File
 from pydantic import Field, FilePath, BaseModel
 
 from typing import Optional
@@ -8,6 +7,7 @@ from .base import Base
 
 
 class CollectBase(Base):
+    user_id: str = Field(...)
     name: Optional[str] = None
     description: Optional[str] = None
 

@@ -3,7 +3,7 @@ from app.main import app
 from app.core import config
 from app.db.database import get_database
 from app.models.user import UserCreate
-from app.tests.utils.utils import random_lower_string, get_server_api
+from app.tests.utils.utils import random_lower_string, get_server_api, random_email
 
 from httpx import AsyncClient
 
@@ -23,9 +23,10 @@ async def user_authentication_headers(username, password):
 
 
 async def create_random_user():
-    email = random_lower_string()
+    email = random_email()
+    username = random_lower_string()
     password = random_lower_string()
-    user_in = UserCreate(username=email, email=email, password=password)
+    user_in = UserCreate(username=username, email=email, password=password)
 
     db = get_database()
     user = await crud.user.create(db, obj_in=user_in)

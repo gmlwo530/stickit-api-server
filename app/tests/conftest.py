@@ -9,7 +9,8 @@ from starlette.datastructures import UploadFile as StarletteUploadFile
 from app.main import app
 from app.db import database
 from app.core import config
-from app.tests.utils.user import authentication_token_from_username
+from app.models.user import User
+from app.tests.utils.user import authentication_token_from_username, create_random_user
 from app.tests.utils.utils import get_server_api, random_lower_string
 
 from tempfile import SpooledTemporaryFile
@@ -49,6 +50,11 @@ async def normal_user_token_headers():
 aiofiles.threadpool.wrap.register(mock.MagicMock)(
     lambda *args, **kwargs: aiofiles.threadpool.AsyncBufferedIOBase(*args, **kwargs)
 )
+
+
+@pytest.fixture
+async def user() -> User:
+    yield await create_random_user()
 
 
 @pytest.fixture
