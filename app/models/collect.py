@@ -3,11 +3,13 @@ from pydantic import Field, FilePath, BaseModel
 
 from typing import Optional
 
+from app.db.database import PyObjectId
+
 from .base import Base
 
 
 class CollectBase(Base):
-    user_id: str = Field(...)
+    user_id: PyObjectId = Field(...)
     name: Optional[str] = None
     description: Optional[str] = None
 

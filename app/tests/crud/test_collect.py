@@ -6,19 +6,27 @@ from app.models.user import User
 from app.models.collect import CollectCreate, CollectUpdate
 from app.tests.utils.utils import random_lower_string
 
+from typing import Tuple
+
 import pytest
 
 
 @pytest.mark.asyncio
-async def test_create_collect(db, user: User, file: StarletteUploadFile) -> None:
+async def test_create_collect(
+    db, user_and_password: Tuple[User, str], file: StarletteUploadFile
+) -> None:
     name = random_lower_string()
+    user = user_and_password[0]
     collect_in = CollectCreate(name=name, file=file, user_id=str(user.id))
     collect = await crud.collect.create(db, obj_in=collect_in)
     assert collect.name == name
 
 
 @pytest.mark.asyncio
-async def test_get_collect(db, user: User, file: StarletteUploadFile) -> None:
+async def test_get_collect(
+    db, user_and_password: Tuple[User, str], file: StarletteUploadFile
+) -> None:
+    user = user_and_password[0]
     name = random_lower_string()
     description = random_lower_string()
     collect_in = CollectCreate(
@@ -32,7 +40,10 @@ async def test_get_collect(db, user: User, file: StarletteUploadFile) -> None:
 
 
 @pytest.mark.asyncio
-async def test_update_collect(db, user: User, file: StarletteUploadFile) -> None:
+async def test_update_collect(
+    db, user_and_password: Tuple[User, str], file: StarletteUploadFile
+) -> None:
+    user = user_and_password[0]
     old_name = random_lower_string()
     collect_in = CollectCreate(name=old_name, user_id=str(user.id), file=file)
     collect = await crud.collect.create(db, obj_in=collect_in)
@@ -55,7 +66,10 @@ async def test_update_collect(db, user: User, file: StarletteUploadFile) -> None
 
 
 @pytest.mark.asyncio
-async def test_delete_collect(db, user: User, file: StarletteUploadFile) -> None:
+async def test_delete_collect(
+    db, user_and_password: Tuple[User, str], file: StarletteUploadFile
+) -> None:
+    user = user_and_password[0]
     name = random_lower_string()
     description = random_lower_string()
     collect_in = CollectCreate(

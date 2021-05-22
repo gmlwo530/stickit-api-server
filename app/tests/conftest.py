@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-from typing import Generator
+from typing import Generator, Tuple
 
 from httpx import AsyncClient
 
@@ -10,7 +10,7 @@ from app.main import app
 from app.db import database
 from app.core import config
 from app.models.user import User
-from app.tests.utils.user import authentication_token_from_username, create_random_user
+from app.tests.utils.user import create_random_user
 from app.tests.utils.utils import get_server_api, random_lower_string
 
 from tempfile import SpooledTemporaryFile
@@ -36,15 +36,10 @@ async def db() -> motor.motor_asyncio.AsyncIOMotorDatabase:
 
 
 @pytest.fixture
-async def async_client() -> Generator:
+async def async_client() -> Generator[None, AsyncClient, None]:
     server_api = get_server_api()
     async with AsyncClient(app=app, base_url=f"{server_api}{config.API_V1_STR}") as ac:
         yield ac
-
-
-@pytest.fixture
-async def normal_user_token_headers():
-    return await authentication_token_from_username("test@example.com")
 
 
 aiofiles.threadpool.wrap.register(mock.MagicMock)(
@@ -53,12 +48,12 @@ aiofiles.threadpool.wrap.register(mock.MagicMock)(
 
 
 @pytest.fixture
-async def user() -> User:
+async def user_and_password() -> Generator[None, Tuple[User, str], None]:
     yield await create_random_user()
 
 
 @pytest.fixture
-def file() -> StarletteUploadFile:
+def file() -> Generator[None, StarletteUploadFile, None]:
     path = Path(__file__).parent
 
     with open(
