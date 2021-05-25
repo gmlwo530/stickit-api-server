@@ -12,3 +12,5 @@ ROLE_SUPERUSER = "superuser"
 
 SERVER_NAME = os.environ["SERVER_NAME"]
 SECRET_KEY = os.environ["SECRET_KEY"]
+
+UPLOAD_DIR_NAME = os.environ["UPLOAD_DIR_NAME"]

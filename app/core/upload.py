@@ -2,6 +2,8 @@ from fastapi import UploadFile
 
 from pathlib import Path
 
+from app.core.config import UPLOAD_DIR_NAME
+
 import time
 import aiofiles
 
@@ -12,7 +14,7 @@ class Upload:
 
     async def save(self) -> Path:
         app_path = Path(__file__).parents[1]
-        upload_dir_name = "uploads"
+        upload_dir_name = UPLOAD_DIR_NAME
         upload_dir_path = app_path.joinpath(upload_dir_name)
 
         Path.mkdir(upload_dir_path, exist_ok=True)

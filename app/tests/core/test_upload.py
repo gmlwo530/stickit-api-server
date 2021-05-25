@@ -13,3 +13,5 @@ async def test_upload_save(file: StarletteUploadFile):
     with mock.patch("aiofiles.threadpool.sync_open", return_value=mock_file):
         upload = Upload(file=file)
         await upload.save()
+
+        mock_file.write.assert_called()

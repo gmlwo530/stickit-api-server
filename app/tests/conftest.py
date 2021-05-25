@@ -20,12 +20,35 @@ from unittest import mock
 import pytest
 import motor
 import aiofiles
-
+import asyncio
+import os
 
 load_dotenv()
 
+def _remove_test_uploads_dir():
+    path = Path(__file__).parents[1]
+    test_upload_dir = path.joinpath(os.environ["UPLOAD_DIR_NAME"])
+    if test_upload_dir.exists():
+        for f in test_upload_dir.iterdir():
+            f.unlink()
+        test_upload_dir.rmdir()
 
-@pytest.fixture
+@pytest.fixture(autouse=True, scope="session")
+def set_up():
+    yield
+    _remove_test_uploads_dir()
+
+@pytest.fixture(scope='session')
+def event_loop():
+    return asyncio.get_event_loop()
+
+# @pytest.fixture(scope='session')
+# def event_loop(request):
+#     loop = asyncio.get_event_loop_policy().new_event_loop()
+#     yield loop
+#     loop.close()
+
+@pytest.fixture(scope="session")
 async def db() -> motor.motor_asyncio.AsyncIOMotorDatabase:
     try:
         db = database.get_database()
@@ -35,7 +58,7 @@ async def db() -> motor.motor_asyncio.AsyncIOMotorDatabase:
         db.client.close()
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 async def async_client() -> Generator[None, AsyncClient, None]:
     server_api = get_server_api()
     async with AsyncClient(app=app, base_url=f"{server_api}{config.API_V1_STR}") as ac:
@@ -47,7 +70,7 @@ aiofiles.threadpool.wrap.register(mock.MagicMock)(
 )
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 async def user_and_password() -> Generator[None, Tuple[User, str], None]:
     yield await create_random_user()
 
