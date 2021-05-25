@@ -61,14 +61,8 @@ async def test_read_collects(
     # collect = await _create_collect(db, user, file)
     pass
 
-
 @pytest.mark.asyncio
-async def test_post_collect(
-    async_client: AsyncClient,
-    db,
-    file: StarletteUploadFile,
-    user_and_password: Tuple[User, str],
-):
+async def test_create_collect(async_client, file: StarletteUploadFile, user_and_password: Tuple[User, str],):
     url = "/collects"
     user = user_and_password[0]
     password = user_and_password[1]
@@ -96,8 +90,46 @@ async def test_post_collect(
 
 
 @pytest.mark.asyncio
-async def test_update_collect(async_client):
-    pass
+async def test_update_collect(
+    async_client: AsyncClient,
+    db, 
+    file: StarletteUploadFile,
+    user_and_password: Tuple[User, str],
+):
+    url = "/collects"
+    user = user_and_password[0]
+    password = user_and_password[1]
+    auth_token = await authentication_token_from_username(user.username, password)
+    collect = await _create_collect(db, user, file)
+
+    updated_name = random_lower_string()
+    res = await async_client.put(f"{url}/{collect.id}", data={"name": updated_name}, headers=auth_token)
+    assert res.status_code == 201
+    assert res.json()["name"] == updated_name
+    updated_collect = await crud.collect.get(db, collect.id)
+    assert res.json() == jsonable_encoder(updated_collect)
+
+
+    updated_desc = random_lower_string()
+    res = await async_client.put(f"{url}/{collect.id}", data={"description": updated_desc}, headers=auth_token)
+    assert res.status_code == 201
+    assert res.json()["description"] == updated_desc
+    updated_collect = await crud.collect.get(db, collect.id)
+    assert res.json() == jsonable_encoder(updated_collect)
+
+
+    files = {
+        "file": (
+            file.filename,
+            file.file,
+            file.content_type,
+        )
+    }
+
+    res = await async_client.put(f"{url}/{collect.id}", files=files, headers=auth_token)
+    assert res.status_code == 201
+    updated_collect = await crud.collect.get(db, collect.id)
+    assert res.json() == jsonable_encoder(updated_collect)
 
 
 @pytest.mark.asyncio

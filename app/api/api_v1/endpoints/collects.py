@@ -5,7 +5,7 @@ from fastapi.param_functions import Form
 
 from app import crud
 from app.models.user import UserInDB
-from app.models.collect import Collect, CollectCreate
+from app.models.collect import Collect, CollectCreate, CollectUpdate
 from app.api.utils.exceptions import (
     HTTP_403_FORBIDDEN_USER_PERMISSION,
     HTTP_404_NOT_FOUND_DETAIL,
@@ -62,14 +62,38 @@ async def create_collect(
     return collect
 
 
-@router.put("/{id}", response_model=Collect)
+@router.put("/{id}", response_model=Collect, status_code=status.HTTP_201_CREATED)
 async def update_collect(
     *,
+    id: str,
     name: str = Form(None),
     description: str = Form(None),
-    file: UploadFile = File(None)
+    file: UploadFile = File(None),
+    current_user: UserInDB = Depends(get_current_active_user)
 ):
-    pass
+    db = get_database()
+
+    collect = await crud.collect.get(db, id)
+
+    if collect is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=HTTP_404_NOT_FOUND_DETAIL.format("Collect"),
+        )
+
+    if collect.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=HTTP_403_FORBIDDEN_USER_PERMISSION,
+        )
+
+    collect_in = CollectUpdate(
+        user_id=current_user.id, name=name, description=description, file=file
+    )
+
+    updated_collect = await crud.collect.update(db, obj=collect, obj_in=collect_in)
+
+    return updated_collect
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
