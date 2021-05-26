@@ -3,7 +3,10 @@ name = "stickit-api-server"
 version = "0.0.1"
 description = ""
 authors = ["CHOI HEE JAE <gmlwo530@gmail.com>"]
-
+packages = [
+    { include="app", from="." },
+    { include="conf", from="." }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -43,6 +46,10 @@ awscli = "^1.19.17"
 pytest = "^6.2.2"
 pytest-asyncio = "^0.14.0"
 coverage = "^5.5"
+
+[tool.poetry.scripts]
+test = "conf.command:run_pytest"
+start = "conf.command:run_server"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
