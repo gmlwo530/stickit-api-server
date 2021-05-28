@@ -49,6 +49,7 @@ coverage = "^5.5"
 
 [tool.poetry.scripts]
 test = "conf.command:run_pytest"
+cov = "conf.command:check_coverage"
 start = "conf.command:run_server"
 
 [build-system]
