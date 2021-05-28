@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Dict
 from app import crud
 from app.main import app
 from app.core import config
@@ -46,3 +46,11 @@ async def authentication_token_from_username(username, password):
         user = crud.user.create(db, obj_in=user_in)
 
     return await user_authentication_headers(username, password)
+
+
+async def create_no_owner_token() -> Dict:
+    no_owner_password = random_lower_string()
+    no_owner, _ = await create_random_user(password=no_owner_password)
+    return await authentication_token_from_username(
+        no_owner.username, no_owner_password
+    )

@@ -2,6 +2,7 @@ from app.db.database import get_database
 from fastapi import APIRouter, Depends, status, File, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Form
+from fastapi.responses import JSONResponse
 
 from app import crud
 from app.models.user import UserInDB
@@ -97,5 +98,25 @@ async def update_collect(
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_collect(*, id: str):
-    pass
+async def delete_collect(
+    *, id: str, current_user: UserInDB = Depends(get_current_active_user)
+):
+    db = get_database()
+
+    collect = await crud.collect.get(db, id)
+
+    if collect is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=HTTP_404_NOT_FOUND_DETAIL.format("Collect"),
+        )
+
+    if collect.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=HTTP_403_FORBIDDEN_USER_PERMISSION,
+        )
+
+    await crud.collect.delete(db, obj=collect)
+
+    return JSONResponse(status_code=status.HTTP_204_NO_CONTENT)
