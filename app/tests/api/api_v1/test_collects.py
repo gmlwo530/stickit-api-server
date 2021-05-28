@@ -1,3 +1,4 @@
+from app.core.config import PAGINATION_COUNT
 from fastapi.encoders import jsonable_encoder
 from starlette.datastructures import UploadFile as StarletteUploadFile
 from httpx import AsyncClient
@@ -52,13 +53,30 @@ async def test_read_collect(
 
 @pytest.mark.asyncio
 async def test_read_collects(
-    async_client, db, file: StarletteUploadFile, user_and_password: Tuple[User, str]
+    async_client: AsyncClient,
+    db,
+    file: StarletteUploadFile,
+    user_and_password: Tuple[User, str],
 ):
-    # user = user_and_password[0]
-    # password = user_and_password[1]
-    # auth_token = await authentication_token_from_username(user.username, password)
-    # collect = await _create_collect(db, user, file)
-    pass
+    url = "/collects"
+    user = user_and_password[0]
+    password = user_and_password[1]
+    auth_token = await authentication_token_from_username(user.username, password)
+
+    expect_collects = []
+    for _ in range(45):
+        collect = await _create_collect(db, user, file)
+        expect_collects.insert(0, jsonable_encoder(collect))
+
+    for page in range(6):
+        res = await async_client.get(f"{url}?page={page}", headers=auth_token)
+        assert res.status_code == 200
+        assert (
+            expect_collects[
+                page * PAGINATION_COUNT : page * PAGINATION_COUNT + PAGINATION_COUNT
+            ]
+            == res.json()
+        )
 
 
 @pytest.mark.asyncio
@@ -105,8 +123,8 @@ async def test_update_collect(
     password = user_and_password[1]
     auth_token = await authentication_token_from_username(user.username, password)
     collect = await _create_collect(db, user, file)
-
     updated_name = random_lower_string()
+
     res = await async_client.put(
         f"{url}/{collect.id}", data={"name": updated_name}, headers=auth_token
     )

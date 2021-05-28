@@ -1,10 +1,11 @@
-from app.db.database import get_database
 from fastapi import APIRouter, Depends, status, File, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.param_functions import Form
 from fastapi.responses import JSONResponse
 
 from app import crud
+from app.crud.base import DESC
+from app.db.database import get_database
 from app.models.user import UserInDB
 from app.models.collect import Collect, CollectCreate, CollectUpdate
 from app.api.utils.exceptions import (
@@ -41,8 +42,15 @@ async def read_collect(
 
 
 @router.get("/", response_model=List[Collect])
-async def read_collects(*, skip: int = 0, limit: int = 50):
-    pass
+async def read_collects(
+    *, page: int = 0, current_user: UserInDB = Depends(get_current_active_user)
+):
+    return await crud.collect.get_many(
+        get_database(),
+        filter={"user_id": str(current_user.id)},
+        sort=[("_id", DESC)],
+        page=page,
+    )
 
 
 @router.post("/", response_model=Collect, status_code=status.HTTP_201_CREATED)

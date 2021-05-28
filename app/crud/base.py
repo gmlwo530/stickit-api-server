@@ -1,4 +1,6 @@
-from typing import Generic, Any, TypeVar, Optional, Dict, Union
+from typing import Generic, Any, TypeVar, Optional, Dict, Union, List
+
+from app.core.config import PAGINATION_COUNT
 
 from pydantic import BaseModel
 
@@ -6,6 +8,7 @@ from fastapi.encoders import jsonable_encoder
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+from pymongo import DESCENDING, ASCENDING
 from pymongo.results import InsertOneResult, UpdateResult, DeleteResult
 
 from .utils.exceptions import CRUDException
@@ -13,6 +16,9 @@ from .utils.exceptions import CRUDException
 ModelType = TypeVar("ModelType", bound=BaseModel)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+
+DESC = DESCENDING
+ASC = ASCENDING
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -26,6 +32,21 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if document:
             return self.model(**document)
         return None
+
+    async def get_many(
+        self,
+        db: AsyncIOMotorDatabase,
+        *,
+        filter: Dict,
+        sort=[],
+        page=0,
+    ) -> List[ModelType]:
+        skip, limit = (
+            page * PAGINATION_COUNT,
+            PAGINATION_COUNT,
+        )
+        cursor = db[self.model_name].find(filter, skip=skip, limit=limit, sort=sort)
+        return [self.model(**doc) for doc in await cursor.to_list(length=None)]
 
     async def create(
         self, db: AsyncIOMotorDatabase, *, obj_in: Union[ModelType, CreateSchemaType]

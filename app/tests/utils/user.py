@@ -43,7 +43,7 @@ async def authentication_token_from_username(username, password):
         username = random_lower_string()
         email = "f{}@example.com"
         user_in = UserCreate(username=username, email=email, password=password)
-        user = crud.user.create(db, obj_in=user_in)
+        user = await crud.user.create(db, obj_in=user_in)
 
     return await user_authentication_headers(username, password)
 

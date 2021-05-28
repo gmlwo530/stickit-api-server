@@ -25,6 +25,7 @@ import os
 
 load_dotenv()
 
+
 def _remove_test_uploads_dir():
     path = Path(__file__).parents[1]
     test_upload_dir = path.joinpath(os.environ["UPLOAD_DIR_NAME"])
@@ -33,14 +34,17 @@ def _remove_test_uploads_dir():
             f.unlink()
         test_upload_dir.rmdir()
 
+
 @pytest.fixture(autouse=True, scope="session")
 def set_up():
     yield
     _remove_test_uploads_dir()
 
-@pytest.fixture(scope='session')
+
+@pytest.fixture(scope="session")
 def event_loop():
     return asyncio.get_event_loop()
+
 
 # @pytest.fixture(scope='session')
 # def event_loop(request):
@@ -48,7 +52,8 @@ def event_loop():
 #     yield loop
 #     loop.close()
 
-@pytest.fixture(scope="session")
+
+@pytest.fixture
 async def db() -> motor.motor_asyncio.AsyncIOMotorDatabase:
     try:
         db = database.get_database()
@@ -70,7 +75,7 @@ aiofiles.threadpool.wrap.register(mock.MagicMock)(
 )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def user_and_password() -> Generator[None, Tuple[User, str], None]:
     yield await create_random_user()
 

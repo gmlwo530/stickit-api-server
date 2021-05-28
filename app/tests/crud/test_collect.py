@@ -2,6 +2,7 @@ from fastapi.encoders import jsonable_encoder
 from starlette.datastructures import UploadFile as StarletteUploadFile
 
 from app import crud
+from app.crud.base import DESC
 from app.models.user import User
 from app.models.collect import CollectCreate, CollectUpdate
 from app.tests.utils.utils import random_lower_string
@@ -37,6 +38,37 @@ async def test_get_collect(
     assert collect2
     assert collect.name == collect2.name
     assert jsonable_encoder(collect) == jsonable_encoder(collect2)
+
+
+@pytest.mark.asyncio
+async def test_get_collects(
+    db, user_and_password: Tuple[User, str], file: StarletteUploadFile
+) -> None:
+    user = user_and_password[0]
+    expect_result = []
+
+    for _ in range(12):
+        name = random_lower_string()
+        description = random_lower_string()
+        collect_in = CollectCreate(
+            name=name, description=description, user_id=str(user.id), file=file
+        )
+        collect = await crud.collect.create(db, obj_in=collect_in)
+        expect_result.insert(0, collect)
+
+    collects = await crud.collect.get_many(
+        db, filter={"user_id": str(user.id)}, sort=[("_id", DESC)]
+    )
+
+    assert len(collects) == 10
+    assert expect_result[:10] == collects
+
+    collects = await crud.collect.get_many(
+        db, filter={"user_id": str(user.id)}, sort=[("_id", DESC)], page=1
+    )
+
+    assert len(collects) == 2
+    assert expect_result[10:] == collects
 
 
 @pytest.mark.asyncio

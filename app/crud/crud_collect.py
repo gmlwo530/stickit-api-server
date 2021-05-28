@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union
 
 from app.core.upload import Upload
 from app.crud.base import CRUDBase
@@ -19,11 +19,6 @@ class CRUDCollect(CRUDBase[Collect, CollectCreate, CollectUpdate]):
         return Collect(
             user_id=user_id, name=name, description=description, file=file_path
         )
-
-    async def get_many(
-        self, db: AsyncIOMotorDatabase, *, user_id: str
-    ) -> List[Collect]:
-        pass
 
     async def create(
         self, db: AsyncIOMotorDatabase, *, obj_in: CollectCreate
