@@ -1,6 +1,6 @@
 from app.crud.base import CRUDBase
 from app.core.security import verify_password, get_password_hash
-from app.models.user import User, UserInDB, UserCreate, UserUpdate
+from app.models.user import User, UserInDB, UserCreate, UserUpdate, UserUpdateInDB
 from app.models.role import RoleEnum
 
 from .utils.utils import ensure_enums_to_strs
@@ -14,7 +14,7 @@ from pymongo.results import InsertOneResult
 from typing import Optional, Dict
 
 
-class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
+class CRUDUser(CRUDBase[User, UserInDB, UserUpdateInDB]):
     async def get_by_username(
         self, db: AsyncIOMotorDatabase, *, username: str
     ) -> Optional[UserInDB]:
@@ -44,6 +44,19 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         created: InsertOneResult = await db[self.model_name].insert_one(obj_in_data)
         new_obj: Dict = await db[self.model_name].find_one({"_id": created.inserted_id})
         return self.model(**new_obj)
+
+    async def update(
+        self, db: AsyncIOMotorDatabase, *, obj: User, obj_in: UserUpdate
+    ) -> User:
+        db_obj_data = UserUpdateInDB(
+            email=obj_in.email,
+            username=obj_in.username,
+            hashed_password=get_password_hash(obj_in.password)
+            if obj_in.password
+            else None,
+        )
+
+        return await super().update(db, obj=obj, obj_in=db_obj_data)
 
     async def authenticate(
         self, db: AsyncIOMotorDatabase, *, username: str, password: str

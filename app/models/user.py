@@ -1,4 +1,5 @@
 from pydantic import Field, EmailStr
+from pydantic.main import BaseModel
 
 from app.models.role import RoleEnum
 from app.models.config import USERPROFILE_DOC_TYPE
@@ -24,9 +25,14 @@ class UserCreate(UserBase):
     disabled: bool = False
 
 
-class UserUpdate(UserBase):
-    email: Optional[str]
-    password: Optional[str]
+class UserUpdate(BaseModel):
+    email: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+
+
+class UserUpdateInDB(UserUpdate):
+    hashed_password: Optional[str] = None
 
 
 class User(UserBase):
