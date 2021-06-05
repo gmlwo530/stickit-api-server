@@ -1,7 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 
 from app import crud
-from app.core.security import get_password_hash
 from app.models.user import UserCreate, UserUpdate
 from app.tests.utils.utils import random_email, random_lower_string
 
