@@ -7,6 +7,7 @@ from app import crud
 from app.crud.base import DESC
 from app.db.database import get_database
 from app.models.user import UserInDB
+from app.models.res_msg import ResMsg
 from app.models.collect import Collect, CollectCreate, CollectUpdate
 from app.api.utils.exceptions import (
     HTTP_403_FORBIDDEN_USER_PERMISSION,
@@ -19,7 +20,7 @@ from typing import List, Optional
 router = APIRouter()
 
 
-@router.get("/{id}", response_model=Collect)
+@router.get("/{id}", response_model=Collect, responses=ResMsg.get_res_msg(status_codes=[403, 404]))
 async def read_collect(
     *, id: str, current_user: UserInDB = Depends(get_current_active_user)
 ):
@@ -71,7 +72,7 @@ async def create_collect(
     return collect
 
 
-@router.put("/{id}", response_model=Collect, status_code=status.HTTP_201_CREATED)
+@router.put("/{id}", response_model=Collect, status_code=status.HTTP_201_CREATED, responses=ResMsg.get_res_msg(status_codes=[403, 404]))
 async def update_collect(
     *,
     id: str,
@@ -105,7 +106,7 @@ async def update_collect(
     return updated_collect
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, responses=ResMsg.get_res_msg(status_codes=[403, 404]))
 async def delete_collect(
     *, id: str, current_user: UserInDB = Depends(get_current_active_user)
 ):
