@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import Union, Sequence, Type
+from typing import Union, Sequence
 
 
-def ensure_enums_to_strs(items: Union[Sequence[Union[Enum, str]], Type[Enum]]):
+def ensure_enums_to_strs(items: Sequence[Union[Enum, str]]):
     str_items = []
     for item in items:
         if isinstance(item, Enum):

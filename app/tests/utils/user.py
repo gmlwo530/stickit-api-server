@@ -50,7 +50,8 @@ async def authentication_token_from_username(username, password):
 
 async def create_no_owner_token() -> Dict:
     no_owner_password = random_lower_string()
-    no_owner, _ = await create_random_user(password=no_owner_password)
+    no_owner_username = random_lower_string()
+    # no_owner, _ = await create_random_user(password=no_owner_password)
     return await authentication_token_from_username(
-        no_owner.username, no_owner_password
+        no_owner_username, no_owner_password
     )

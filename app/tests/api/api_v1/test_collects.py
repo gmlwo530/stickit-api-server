@@ -126,6 +126,11 @@ async def test_update_collect(
     updated_name = random_lower_string()
 
     res = await async_client.put(
+        f"{url}/{random_lower_string()}", data={"name": updated_name}, headers=auth_token
+    )
+    assert res.status_code == 404
+
+    res = await async_client.put(
         f"{url}/{collect.id}", data={"name": updated_name}, headers=auth_token
     )
     assert res.status_code == 201
@@ -176,6 +181,9 @@ async def test_delete_collect(
     no_owner_token = await create_no_owner_token()
     res = await async_client.delete(f"{url}/{collect.id}", headers=no_owner_token)
     assert res.status_code == 403
+
+    res = await async_client.delete(f"{url}/{random_lower_string()}", headers=auth_token)
+    assert res.status_code == 404
 
     res = await async_client.delete(f"{url}/{collect.id}", headers=auth_token)
     assert res.status_code == 204
