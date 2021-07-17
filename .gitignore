@@ -49,3 +49,6 @@ __pypackages__/
 github-actions.secrets
 app/uploads
 .DS_Store
+
+# Local MongoDB data
+data/
