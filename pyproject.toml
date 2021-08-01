@@ -38,6 +38,7 @@ passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 PyJWT = "^2.1.0"
 httpx = "^0.18.1"
 aiofiles = "^0.7.0"
+tenacity = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
